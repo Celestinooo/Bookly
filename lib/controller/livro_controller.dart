@@ -1,13 +1,19 @@
-import 'package:bookly_project/data/livro_repository.dart';
 import 'package:flutter/material.dart';
 import '../model/livro.dart';
+import '../data/livro_repository.dart';
 
 class LivroController extends ChangeNotifier {
   final LivroRepository _repository = LivroRepository();
   List<Livro> livros = [];
+  bool isLoading = true;
 
   Future<void> fetchLivros() async {
+    isLoading = true;
+    notifyListeners();
+
     livros = await _repository.getAllLivros();
+
+    isLoading = false;
     notifyListeners();
   }
 
@@ -16,7 +22,7 @@ class LivroController extends ChangeNotifier {
     await fetchLivros();
   }
 
-  Future<void> deleteLivro(int id) async {
+  Future<void> deleteLivro(String id) async {
     await _repository.deleteLivro(id);
     await fetchLivros();
   }

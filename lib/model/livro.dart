@@ -1,7 +1,7 @@
-import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Livro {
-  final int? id;
+  final String? id;
   final String titulo;
   final String autor;
   final DateTime dataLeitura;
@@ -17,21 +17,24 @@ class Livro {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'titulo': titulo,
       'autor': autor,
-      'dataLeitura': DateFormat('yyyy-MM-dd').format(dataLeitura),
-      'lido': lido ? 1 : 0,
+      'dataLeitura': dataLeitura.toIso8601String(),
+      'lido': lido,
     };
   }
 
-  factory Livro.fromMap(Map<String, dynamic> map) {
+  factory Livro.fromMap(Map<String, dynamic> map, String id) {
     return Livro(
-      id: map['id'],
+      id: id,
       titulo: map['titulo'],
       autor: map['autor'],
       dataLeitura: DateTime.parse(map['dataLeitura']),
-      lido: map['lido'] == 1,
+      lido: map['lido'] ?? false,
     );
+  }
+
+  factory Livro.fromDocumentSnapshot(DocumentSnapshot doc) {
+    return Livro.fromMap(doc.data() as Map<String, dynamic>, doc.id);
   }
 }

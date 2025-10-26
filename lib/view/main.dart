@@ -1,9 +1,15 @@
 import 'package:bookly_project/view/livro_form_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controller/livro_controller.dart';
+import '../firebase_options.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
     ChangeNotifierProvider(
       create: (_) => LivroController()..fetchLivros(),
@@ -56,7 +62,9 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: controller.livros.isEmpty
+      body: controller.isLoading
+          ? const Center(child: CircularProgressIndicator(color: Colors.red))
+          : controller.livros.isEmpty
           ? const Center(child: Text('Nenhum livro cadastrado'))
           : ListView.builder(
         itemCount: controller.livros.length,
@@ -74,7 +82,7 @@ class HomePage extends StatelessWidget {
             },
           );
         },
-      )
+      ),
     );
   }
 }
